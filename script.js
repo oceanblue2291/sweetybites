@@ -198,11 +198,33 @@ function prosesCheckout() {
         return;
     }
 
+    // ====== ⚠️ GANTI NOMOR WA DI SINI ======
+    const waNumber = '6281234567890'; // ← Ganti dengan nomor WA kamu
+
+    // Format pesanan
     const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
-    const detail = cart.map(c => `${c.name} x${c.qty}`).join(', ');
+    const detail = cart.map(c => `- ${c.name} x${c.qty} = Rp ${(c.price * c.qty).toLocaleString()}`).join('\n');
+    const catatan = document.getElementById('catatan').value.trim();
 
-    alert(`✅ Pesanan berhasil!\n\nNama: ${nama}\nAlamat: ${alamat}\nTelp: ${telp}\nPesanan: ${detail}\nTotal: Rp ${total.toLocaleString()}\n\nTerima kasih telah memesan! 🙏`);
+    // Buat pesan
+    let message = `Halo SweetyBites! Saya mau pesan:\n\n${detail}\n\n`;
+    message += `Total: Rp ${total.toLocaleString()}\n\n`;
+    message += `📋 Data Pemesan:\n`;
+    message += `Nama: ${nama}\n`;
+    message += `Alamat: ${alamat}\n`;
+    message += `No. HP: ${telp}\n`;
+    if (catatan) {
+        message += `Catatan: ${catatan}\n`;
+    }
+    message += `\nTerima kasih! 🙏`;
 
+    // Link WA
+    const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+
+    // Buka WhatsApp
+    window.open(waLink, '_blank');
+
+    // Reset
     cart = [];
     updateCartUI();
     showPage('home');

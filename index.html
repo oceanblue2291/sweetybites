@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🍭 SweetyBites</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet" />
     <style>
         /* ===== RESET & GLOBAL ===== */
         * {
@@ -97,7 +98,7 @@
             padding: 0 20px;
             position: relative;
         }
-        
+
         .hero-content {
             position: relative;
             z-index: 1;
@@ -360,7 +361,7 @@
             outline: none;
         }
         .checkout-form .btn-submit {
-            background: #27ae60;
+            background: #25D366;
             color: #fff;
             border: none;
             padding: 16px;
@@ -370,13 +371,14 @@
             font-size: 1.2rem;
             cursor: pointer;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .checkout-form .btn-submit:hover {
-            background: #219a52;
+            background: #1da85c;
         }
-
-        /* ===== FONT GOOGLE ===== */
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@400;700&family=Fredoka+One&display=swap');
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
@@ -493,7 +495,9 @@
                 <div style="background:#f8f4f0; padding:15px; border-radius:12px; margin-bottom:20px;">
                     <p><strong>Total Pesanan:</strong> <span id="checkoutTotal">Rp 0</span></p>
                 </div>
-                <button class="btn-submit" onclick="prosesCheckout()">✅ Pesan Sekarang</button>
+                <button class="btn-submit" onclick="prosesCheckout()">
+                    💬 Pesan via WhatsApp
+                </button>
                 <button style="margin-top:12px; background:#ff6a72; color:#fff; border:none; padding:12px; width:100%; border-radius:50px; font-weight:700; cursor:pointer;" onclick="showPage('home')">← Kembali ke Beranda</button>
             </div>
         </section>
@@ -502,7 +506,7 @@
     <!-- ============================================================ -->
     <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ===== DATA MENU (FOTO TETAP SEPERTI KODE ASLIMU) =====
+        // ===== DATA MENU =====
         const menuData = [{
             id: 1,
             name: 'Mochi Buah',
@@ -587,14 +591,12 @@
         }
 
         function renderOtherMenu() {
-            // Ambil 3 item pertama yang BUKAN best seller
             const nonBest = menuData.filter(m => !m.bestSeller);
-            const limited = nonBest.slice(0, 3); // hanya 3 item
+            const limited = nonBest.slice(0, 3);
             renderCards(limited, 'otherMenuGrid');
         }
 
         function renderFullMenu() {
-            // Tampilkan SEMUA menu (8 item)
             renderCards(menuData, 'fullMenuGrid');
         }
 
@@ -608,7 +610,6 @@
                 cart.push({ ...item, qty: 1 });
             }
             updateCartUI();
-            // feedback
             const btn = event.target;
             btn.textContent = '✅ Ditambahkan!';
             setTimeout(() => btn.textContent = '+ Tambah ke Keranjang', 1000);
@@ -686,7 +687,7 @@
             showPage('checkout');
         }
 
-        // ===== PROSES CHECKOUT =====
+        // ===== PROSES CHECKOUT → WA =====
         function prosesCheckout() {
             const nama = document.getElementById('nama').value.trim();
             const alamat = document.getElementById('alamat').value.trim();
@@ -702,11 +703,31 @@
                 return;
             }
 
+            // ====== ⚠️ GANTI NOMOR WA DI SINI ======
+            const waNumber = '6282161116246'; // ← Ganti dengan nomor WA kamu (pakai kode negara, tanpa +)
+
+            // Format pesanan
             const total = cart.reduce((sum, c) => sum + c.price * c.qty, 0);
-            const detail = cart.map(c => `${c.name} x${c.qty}`).join(', ');
+            const detail = cart.map(c => `- ${c.name} x${c.qty} = Rp ${(c.price * c.qty).toLocaleString()}`).join('\n');
+            const catatan = document.getElementById('catatan').value.trim();
 
-            alert(`✅ Pesanan berhasil!\n\nNama: ${nama}\nAlamat: ${alamat}\nTelp: ${telp}\nPesanan: ${detail}\nTotal: Rp ${total.toLocaleString()}\n\nTerima kasih telah memesan! 🙏`);
+            let message = `Halo SweetyBites! Saya mau pesan:\n\n${detail}\n\n`;
+            message += `Total: Rp ${total.toLocaleString()}\n\n`;
+            message += `📋 Data Pemesan:\n`;
+            message += `Nama: ${nama}\n`;
+            message += `Alamat: ${alamat}\n`;
+            message += `No. HP: ${telp}\n`;
+            if (catatan) {
+                message += `Catatan: ${catatan}\n`;
+            }
+            message += `\nTerima kasih! 🙏`;
 
+            const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+
+            // Buka WhatsApp
+            window.open(waLink, '_blank');
+
+            // Reset keranjang
             cart = [];
             updateCartUI();
             showPage('home');
